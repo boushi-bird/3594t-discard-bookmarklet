@@ -119,11 +119,15 @@ module.exports = class ListFrame {
       const div = this._document.createElement('div')
       const checkBox = this._document.createElement('input')
       checkBox.setAttribute('type', 'checkbox')
+      checkBox.setAttribute('style', '-ms-transform:scale(2, 2);-webkit-transform:scale(2, 2);transform:scale(2, 2);')
+      checkBox.style.width = '24px'
+      checkBox.style.height = '24px'
       checkBox.checked = result.selected
       checkBox.addEventListener('click', () => {
         result.selected = checkBox.checked
       })
       const span = this._document.createElement('span')
+      span.style.verticalAlign = 'super'
       span.innerHTML = this._createCardInfoHtml(result)
       div.appendChild(checkBox)
       div.appendChild(span)
