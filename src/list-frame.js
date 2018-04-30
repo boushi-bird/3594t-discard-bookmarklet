@@ -10,10 +10,10 @@ module.exports = class ListFrame {
   constructor (document) {
     const iframe = document.createElement('iframe')
     iframe.style.position = 'absolute'
-    iframe.style.top = '10%'
-    iframe.style.right = '10%'
-    iframe.style.width = '80%'
-    iframe.style.height = '80%'
+    iframe.style.top = '10vh'
+    iframe.style.right = '10vh'
+    iframe.style.width = '80vw'
+    iframe.style.height = '80vh'
     iframe.style.backgroundColor = 'white'
     iframe.style.zIndex = 100
     document.body.appendChild(iframe)
