@@ -34,6 +34,14 @@ module.exports = class ListFrame {
     copy.addEventListener('click', () => {
       this._copy()
     })
+    const selectAll = this._document.getElementById('select_all')
+    selectAll.addEventListener('click', () => {
+      this._selectionChangeAll(true)
+    })
+    const clearAll = this._document.getElementById('clear_all')
+    clearAll.addEventListener('click', () => {
+      this._selectionChangeAll(false)
+    })
   }
 
   show () {
@@ -44,22 +52,48 @@ module.exports = class ListFrame {
     this.iframe.style.display = 'none'
   }
 
+  _selectionChangeAll (select) {
+    this.results.forEach((result) => {
+      result.selected = select
+    })
+    this._updateSelectList()
+  }
+
   _copy () {
+    const selectedResults = this.results.filter(v => v.selected)
+    if (selectedResults.length === 0) {
+      global.alert('1つ以上選択する必要があります')
+      return
+    }
     const tempElm = this._document.createElement('div')
-    this.results.filter(v => v.selected).forEach((result) => {
+    this._document.body.appendChild(tempElm)
+    const description = this._document.createElement('div')
+    description.innerHTML = `武将名のリンクから登用ページへ行けます
+<br /><br />`
+    tempElm.appendChild(description)
+    selectedResults.forEach((result) => {
       const div = this._document.createElement('div')
       div.innerHTML = this._createCardInfoHtml(result)
       tempElm.appendChild(div)
     })
     const createdBy = this._document.createElement('div')
-    createdBy.innerHTML = `<br /><br />この投稿は <a href="">三国志大戦 解任ブックマークレット</a> により作成しています。`
+    createdBy.innerHTML = `<br /><br />
+この投稿は 三国志大戦 解任ブックマークレット(<a href="https://boushi-bird.github.io/3594t-discard-bookmarklet/">https://boushi-bird.github.io/3594t-discard-bookmarklet/</a>)
+により作成しています。`
     tempElm.appendChild(createdBy)
     this._document.body.appendChild(tempElm)
 
     this._document.getSelection().selectAllChildren(tempElm)
-    this._document.execCommand('copy')
+    const success = this._document.execCommand('copy')
 
     this._document.body.removeChild(tempElm)
+    if (success) {
+      const message = this._document.getElementById('message')
+      message.innerHTML = '<small>コピーしました!</small>'
+      setTimeout(() => {
+        message.innerHTML = ''
+      }, 2000)
+    }
   }
 
   update (cardIndexes, searcher) {
