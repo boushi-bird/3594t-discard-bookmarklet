@@ -10,12 +10,13 @@ module.exports = class ListFrame {
   constructor (document) {
     const iframe = document.createElement('iframe')
     iframe.style.position = 'absolute'
-    iframe.style.top = '10vh'
-    iframe.style.right = '10vh'
-    iframe.style.width = '80vw'
-    iframe.style.height = '80vh'
+    iframe.style.top = '0px'
+    iframe.style.left = '0px'
+    iframe.style.width = '90vw'
+    iframe.style.minWidth = '480px'
+    iframe.style.height = '98vh'
     iframe.style.backgroundColor = 'white'
-    iframe.style.zIndex = 100
+    iframe.style.zIndex = 1000
     document.body.appendChild(iframe)
 
     this.iframe = iframe
@@ -119,9 +120,10 @@ module.exports = class ListFrame {
       const div = this._document.createElement('div')
       const checkBox = this._document.createElement('input')
       checkBox.setAttribute('type', 'checkbox')
-      checkBox.setAttribute('style', '-ms-transform:scale(2, 2);-webkit-transform:scale(2, 2);transform:scale(2, 2);')
+      checkBox.setAttribute('style', '-ms-transform:scale(1.5,1.5);-webkit-transform:scale(1.5,1.5);transform:scale(1.5,1.5);')
       checkBox.style.width = '24px'
       checkBox.style.height = '24px'
+      checkBox.style.margin = '10px'
       checkBox.checked = result.selected
       checkBox.addEventListener('click', () => {
         result.selected = checkBox.checked

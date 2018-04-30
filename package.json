@@ -4,7 +4,7 @@
   "description": "",
   "main": "src/index.js",
   "scripts": {
-    "dev": "webpack-dev-server --mode development --module-bind 'js=babel-loader'",
+    "dev": "webpack-dev-server --mode development --module-bind 'js=babel-loader' --host 0.0.0.0",
     "build": "npm-run-all build:*",
     "build:embed": "webpack --mode production --output docs/scripts/bundle.js --module-bind 'js=babel-loader'",
     "build:bookmarklet": "NODE_ENV=production node bin/build-bookmarklet.js | bookmarklet - > docs/bookmarklet/main.js",
