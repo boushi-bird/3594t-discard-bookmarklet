@@ -1,0 +1,1 @@
+javascript:(function()%7B%22use%20strict%22%3B!function(t%2Ce%2Cn%2Ci%2Cc)%7Bif(t%5Bi%5D)return%20t%5Bi%5D()%3B(c%3De.getElementById(i))%7C%7C((c%3De.createElement(%22script%22)).src%3D%22http%3A%2F%2Flocalhost%3A8080%2Fmain.js%22%2Cc.id%3Di%2Ce.body.appendChild(c))%7D(window%2Cdocument%2C0%2C%22VsD8NEfx%22)%3B%7D)()
