@@ -1,0 +1,33 @@
+{
+  "name": "3594t-discard-bookmarklet",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/index.js",
+  "scripts": {
+    "dev": "webpack-dev-server --mode development --module-bind 'js=babel-loader'",
+    "build": "npm-run-all build:*",
+    "build:embed": "webpack --mode production --output docs/scripts/bundle.js --module-bind 'js=babel-loader'",
+    "build:bookmarklet": "NODE_ENV=production node bin/build-bookmarklet.js | bookmarklet - > docs/bookmarklet/main.js",
+    "build:bookmarklet-dev": "node bin/build-bookmarklet.js | bookmarklet - > docs/bookmarklet/local.js",
+    "lint": "eslint ."
+  },
+  "author": "boushi-bird <boushi-bird@users.noreply.github.com>",
+  "license": "ISC",
+  "dependencies": {},
+  "devDependencies": {
+    "babel-core": "^6.26.3",
+    "babel-loader": "^7.1.4",
+    "babel-preset-env": "^1.6.1",
+    "bookmarklet": "^1.0.1",
+    "eslint": "^4.19.1",
+    "eslint-config-standard": "^11.0.0",
+    "eslint-plugin-import": "^2.11.0",
+    "eslint-plugin-node": "^6.0.1",
+    "eslint-plugin-promise": "^3.7.0",
+    "eslint-plugin-standard": "^3.1.0",
+    "npm-run-all": "^4.1.2",
+    "webpack": "^4.6.0",
+    "webpack-cli": "^2.0.15",
+    "webpack-dev-server": "^3.1.3"
+  }
+}
