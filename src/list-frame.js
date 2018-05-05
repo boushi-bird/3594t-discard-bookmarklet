@@ -140,7 +140,7 @@ module.exports = class ListFrame {
   _createCardInfoHtml ({ card, general }) {
     const genSubsText = card.genSubs.map(v => v[0]).join('')
     return `${card.number}
-      <a href="${general.url}" target="_blank">第${general.version}弾 ${general.rarity}${general.name}</a>
+      <a href="${general.url}" target="_blank">${general.version} ${general.rarity}${general.name}</a>
       ${card.genMain} ${genSubsText}`
   }
 }
