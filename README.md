@@ -12,7 +12,7 @@ npm install
 
 ### 開発
 
-[開発用ブックマークレット](bookmarklet/local.js)を登録する
+[開発用ブックマークレット](docs/bookmarklet/local.js)を登録する
 
 下記を実行
 
