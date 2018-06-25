@@ -12,7 +12,7 @@ title: TOP
 - 本ツールの使用により発生したトラブル、不利益については一切の責任を負いかねます。
 - 本ツールについてや本ツール使用時による不具合を 三国志大戦公式サイトの運営元である 株式会社セガ・インタラクティブ へ行うのは絶対にやめて下さい。
 - 各サイトの仕様変更により使えなくなる可能性があります。
-- 不具合については [こちら](https://github.com/boushi-bird/3594t-discard-bookmarklet/issues) にお願いします。
+- 不具合については [Github issues](https://github.com/boushi-bird/3594t-discard-bookmarklet/issues) か [こちら](https://3594t-touen.jp/posts/51162) にお願いします。
 - 以上のことを理解した上で自己責任のもとでお使い下さい。
 
 ### ブックマークレットの登録
