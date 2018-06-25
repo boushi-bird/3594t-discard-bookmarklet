@@ -21,6 +21,7 @@ module.exports = class ListFrame {
 
     this.iframe = iframe
     this.results = []
+    this.filterCondition = { sr: true, r: true, other: true }
     this._document = this.iframe.contentWindow.document
     this._document.body.innerHTML = iframeBody
     this._setupEvents()
@@ -43,6 +44,20 @@ module.exports = class ListFrame {
     clearAll.addEventListener('click', () => {
       this._selectionChangeAll(false)
     })
+    const selectSR = this._document.getElementById('select_sr')
+    const selectR = this._document.getElementById('select_r')
+    const selectOther = this._document.getElementById('select_other')
+    const selects = [selectSR, selectR, selectOther]
+    selects.forEach((select) => {
+      select.addEventListener('click', () => {
+        this.filterCondition = {
+          sr: selectSR.checked,
+          r: selectR.checked,
+          other: selectOther.checked
+        }
+        this._updateSelectList()
+      })
+    })
   }
 
   show () {
@@ -61,7 +76,7 @@ module.exports = class ListFrame {
   }
 
   _copy () {
-    const selectedResults = this.results.filter(v => v.selected)
+    const selectedResults = this._getVisibleResults().filter(v => v.selected)
     if (selectedResults.length === 0) {
       global.alert('1つ以上選択する必要があります')
       return
@@ -113,10 +128,22 @@ module.exports = class ListFrame {
     this._updateSelectList()
   }
 
+  _getVisibleResults () {
+    return this.results.filter(({ general: { rarity } }) => {
+      const { sr, r, other } = this.filterCondition
+      if (rarity === 'SR') {
+        return sr
+      } else if (rarity === 'R') {
+        return r
+      }
+      return other
+    })
+  }
+
   _updateSelectList () {
     const selectList = this._document.getElementById('main')
     removeChildAll(selectList)
-    this.results.forEach((result) => {
+    this._getVisibleResults().forEach((result) => {
       const div = this._document.createElement('div')
       const checkBox = this._document.createElement('input')
       checkBox.setAttribute('type', 'checkbox')
