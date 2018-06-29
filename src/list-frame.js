@@ -14,6 +14,7 @@ module.exports = class ListFrame {
     iframe.style.left = '0px'
     iframe.style.width = '90vw'
     iframe.style.minWidth = '480px'
+    iframe.style.maxWidth = '720px'
     iframe.style.height = '98vh'
     iframe.style.backgroundColor = 'white'
     iframe.style.zIndex = 1000
