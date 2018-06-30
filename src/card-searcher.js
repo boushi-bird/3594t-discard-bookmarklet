@@ -59,7 +59,9 @@ module.exports = class CardSearcher {
       name: personal.name,
       rarity: general.rarity,
       version,
-      url
+      url,
+      major,
+      minor
     }
   }
 }

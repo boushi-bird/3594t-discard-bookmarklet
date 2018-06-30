@@ -6,6 +6,12 @@ const removeChildAll = (element) => {
   }
 }
 
+// polyfill
+Number.isNaN = Number.isNaN || function (value) {
+  // eslint-disable-next-line no-self-compare
+  return typeof value === 'number' && value !== value
+}
+
 module.exports = class ListFrame {
   constructor (document) {
     const iframe = document.createElement('iframe')
@@ -22,7 +28,15 @@ module.exports = class ListFrame {
 
     this.iframe = iframe
     this.results = []
-    this.filterCondition = { sr: true, r: true, other: true }
+    this.versionFilters = {}
+    this.filterCondition = {
+      rarities: {
+        sr: true,
+        r: true,
+        other: true
+      },
+      versions: []
+    }
     this._document = this.iframe.contentWindow.document
     this._document.body.innerHTML = iframeBody
     this._setupEvents()
@@ -51,13 +65,19 @@ module.exports = class ListFrame {
     const selects = [selectSR, selectR, selectOther]
     selects.forEach((select) => {
       select.addEventListener('click', () => {
-        this.filterCondition = {
+        this.filterCondition.rarities = {
           sr: selectSR.checked,
           r: selectR.checked,
           other: selectOther.checked
         }
         this._updateSelectList()
       })
+    })
+    const filter = this._document.getElementById('filter')
+    const showFilter = this._document.getElementById('show_filter')
+    showFilter.addEventListener('click', () => {
+      filter.style.display = 'inline'
+      showFilter.style.display = 'none'
     })
   }
 
@@ -115,6 +135,8 @@ module.exports = class ListFrame {
 
   update (cardIndexes, searcher) {
     this.results = []
+    this.versionFilters = {}
+    this.filterCondition.versions = []
     cardIndexes.forEach(index => {
       const { card, general } = searcher.searchByCardIndex(index)
       if (!card || !general) {
@@ -125,20 +147,80 @@ module.exports = class ListFrame {
         card,
         general
       })
+      if (!this.versionFilters[general.version]) {
+        const { major, minor } = general
+        this.versionFilters[general.version] = { major, minor }
+        this.filterCondition.versions.push(general.version)
+      }
     })
+    this._updateFilters()
     this._updateSelectList()
   }
 
   _getVisibleResults () {
-    return this.results.filter(({ general: { rarity } }) => {
-      const { sr, r, other } = this.filterCondition
-      if (rarity === 'SR') {
-        return sr
-      } else if (rarity === 'R') {
-        return r
+    return this.results
+      .filter(({ general: { rarity } }) => {
+        const { rarities: { sr, r, other } } = this.filterCondition
+        if (rarity === 'SR') {
+          return sr
+        } else if (rarity === 'R') {
+          return r
+        }
+        return other
+      })
+      .filter(({ general: { major, minor } }) => {
+        const { versions } = this.filterCondition
+        return versions.some((version) => {
+          const verCondition = this.versionFilters[version]
+          return major === verCondition.major && minor === verCondition.minor
+        })
+      })
+  }
+
+  _updateFilters () {
+    const filter = this._document.getElementById('filter')
+    removeChildAll(filter)
+    const versions = Object.keys(this.versionFilters)
+    versions.sort((v1, v2) => {
+      const volume = (v) => {
+        const { major, minor } = v
+        let minorVol = parseInt(minor)
+        if (Number.isNaN(minorVol)) {
+          minorVol = 99
+        }
+        return parseInt(major) * 100 + minorVol
       }
-      return other
+      return volume(this.versionFilters[v1]) - volume(this.versionFilters[v2])
     })
+    versions.forEach((version, i) => {
+      const id = `filter_v${i}`
+      const checkBox = this._document.createElement('input')
+      checkBox.setAttribute('id', id)
+      checkBox.setAttribute('type', 'checkbox')
+      checkBox.setAttribute('style', '-ms-transform:scale(1.5,1.5);-webkit-transform:scale(1.5,1.5);transform:scale(1.5,1.5);')
+      checkBox.checked = this.filterCondition.versions.indexOf(version) >= 0
+      checkBox.addEventListener('click', () => {
+        const newVersions = this.filterCondition.versions.filter(v => v !== version)
+        if (checkBox.checked) {
+          newVersions.push(version)
+        }
+        this.filterCondition.versions = newVersions
+        this._updateSelectList()
+      })
+      const label = this._document.createElement('label')
+      label.setAttribute('for', id)
+      label.setAttribute('style', 'margin-right:10px;')
+      label.innerHTML = version
+      filter.appendChild(checkBox)
+      filter.appendChild(label)
+    })
+    const showFilter = this._document.getElementById('show_filter')
+    if (versions.length > 0) {
+      showFilter.style.display = 'inline'
+    } else {
+      showFilter.style.display = 'none'
+    }
+    filter.style.display = 'none'
   }
 
   _updateSelectList () {
