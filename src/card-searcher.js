@@ -37,12 +37,12 @@ module.exports = class CardSearcher {
     // genSubIndexes.sort()
     const genSubs = genSubIndexes
       .map(v => this.baseData['GEN_SUB'][v]['name_short'])
-    const fireDate = this._dateFormat(card['fire_date'])
+    const fireLimitDate = this._dateFormat(card['hire_limit_date'])
     return {
       number: card.number,
       genMain,
       genSubs,
-      fireDate
+      fireLimitDate
     }
   }
 
