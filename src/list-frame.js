@@ -147,10 +147,11 @@ module.exports = class ListFrame {
         card,
         general
       })
-      if (!this.versionFilters[general.version]) {
-        const { major, minor } = general
-        this.versionFilters[general.version] = { major, minor }
-        this.filterCondition.versions.push(general.version)
+      const verLavel = `第${general.major}段`
+      if (!this.versionFilters[verLavel]) {
+        const { major } = general
+        this.versionFilters[verLavel] = major
+        this.filterCondition.versions.push(verLavel)
       }
     })
     this._updateFilters()
@@ -168,11 +169,11 @@ module.exports = class ListFrame {
         }
         return other
       })
-      .filter(({ general: { major, minor } }) => {
+      .filter(({ general: { major } }) => {
         const { versions } = this.filterCondition
         return versions.some((version) => {
           const verCondition = this.versionFilters[version]
-          return major === verCondition.major && minor === verCondition.minor
+          return major === verCondition
         })
       })
   }
@@ -182,15 +183,7 @@ module.exports = class ListFrame {
     removeChildAll(filter)
     const versions = Object.keys(this.versionFilters)
     versions.sort((v1, v2) => {
-      const volume = (v) => {
-        const { major, minor } = v
-        let minorVol = parseInt(minor)
-        if (Number.isNaN(minorVol)) {
-          minorVol = 99
-        }
-        return parseInt(major) * 100 + minorVol
-      }
-      return volume(this.versionFilters[v1]) - volume(this.versionFilters[v2])
+      return parseInt(this.versionFilters[v1]) - parseInt(this.versionFilters[v2])
     })
     versions.forEach((version, i) => {
       const id = `filter_v${i}`
