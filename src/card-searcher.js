@@ -37,11 +37,25 @@ module.exports = class CardSearcher {
     // genSubIndexes.sort()
     const genSubs = genSubIndexes
       .map(v => this.baseData['GEN_SUB'][v]['name_short'])
+    const fireDate = this._dateFormat(card['fire_date'])
     return {
       number: card.number,
       genMain,
-      genSubs
+      genSubs,
+      fireDate
     }
+  }
+
+  _dateFormat (stringDate) {
+    if (!stringDate || stringDate.length !== 14) {
+      return ''
+    }
+    // yyyyMMddhhmmss -> MM/dd hh:mm
+    const MM = stringDate.substr(4, 2)
+    const dd = stringDate.substr(6, 2)
+    const hh = stringDate.substr(8, 2)
+    const mm = stringDate.substr(10, 2)
+    return `${MM}/${dd} ${hh}:${mm}`
   }
 
   _createLabeledGeneral (general) {

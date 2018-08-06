@@ -244,6 +244,6 @@ module.exports = class ListFrame {
     const genSubsText = card.genSubs.map(v => v[0]).join('')
     return `${card.number}
       <a href="${general.url}" target="_blank">${general.version} ${general.rarity}${general.name}</a>
-      ${card.genMain} ${genSubsText}`
+      ${card.genMain} ${genSubsText} | 期限:${card.fireDate}`
   }
 }
