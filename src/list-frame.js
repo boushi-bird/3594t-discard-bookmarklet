@@ -106,12 +106,24 @@ module.exports = class ListFrame {
     this._document.body.appendChild(tempElm)
     const description = this._document.createElement('div')
     description.innerHTML = `武将名のリンクから登用ページへ行けます
-<br /><br />`
+<br />`
     tempElm.appendChild(description)
-    selectedResults.forEach((result) => {
-      const div = this._document.createElement('div')
-      div.innerHTML = this._createCardInfoHtml(result)
-      tempElm.appendChild(div)
+    const hireLimitFormat = ({yyyy, MM, dd, hh, mm}) => `${yyyy}/${MM}/${dd} ${hh}:${mm}`
+    this._partitionHideLimitGroup(selectedResults).forEach(({ min, max, list }) => {
+      const hireLimit = this._document.createElement('div')
+      if (max !== min) {
+        hireLimit.innerHTML = `<br />
+登用期限: ${this._dateFormat(min, hireLimitFormat)} - ${this._dateFormat(max, hireLimitFormat)}`
+      } else {
+        hireLimit.innerHTML = `<br />
+登用期限: ${this._dateFormat(min, hireLimitFormat)}`
+      }
+      tempElm.appendChild(hireLimit)
+      list.forEach((result) => {
+        const div = this._document.createElement('div')
+        div.innerHTML = this._createCardInfoHtml(result, false)
+        tempElm.appendChild(div)
+      })
     })
     const createdBy = this._document.createElement('div')
     createdBy.innerHTML = `<br /><br />
@@ -131,6 +143,51 @@ module.exports = class ListFrame {
         message.innerHTML = ''
       }, 2000)
     }
+  }
+
+  _partitionHideLimitGroup (selectedResults) {
+    let current = null
+    const results = []
+    const compare = (v1, v2) => {
+      return parseInt(v1) - parseInt(v2)
+    }
+    const needNext = (hireLimitDate) => {
+      if (current == null) {
+        return true
+      }
+      // 20枚以上
+      if (current.list.length >= 20) {
+        return true
+      }
+      // 5枚以上かつ日付が変わったら
+      if (current.list.length >= 5 && compare(current.min, hireLimitDate) !== 0) {
+        return true
+      }
+      // 3日以上空いている
+      if (compare(current.max, hireLimitDate) >= 3000000) {
+        return true
+      }
+      return false
+    }
+    const nextPartition = (hireLimitDate) => {
+      if (!needNext(hireLimitDate)) {
+        return
+      }
+      current = { min: null, max: null, list: [] }
+      results.push(current)
+    }
+    selectedResults.forEach(r => {
+      const { card: { hireLimitDate } } = r
+      nextPartition(hireLimitDate)
+      if (current.min == null || compare(current.min, hireLimitDate) > 0) {
+        current.min = hireLimitDate
+      }
+      if (current.max == null || compare(current.max, hireLimitDate) < 0) {
+        current.max = hireLimitDate
+      }
+      current.list.push(r)
+    })
+    return results
   }
 
   update (cardIndexes, searcher) {
@@ -240,10 +297,28 @@ module.exports = class ListFrame {
     })
   }
 
-  _createCardInfoHtml ({ card, general }) {
+  _createCardInfoHtml ({ card, general }, showHireLimit = true) {
     const genSubsText = card.genSubs.map(v => v[0]).join('')
+    let displayHireLimitDate = ''
+    if (showHireLimit) {
+      displayHireLimitDate = ' | 期限:' + this._dateFormat(card.hireLimitDate, ({MM, dd, hh, mm}) => `${MM}/${dd} ${hh}:${mm}`)
+    }
     return `${card.number}
-      <a href="${general.url}" target="_blank">${general.version} ${general.rarity}${general.name}</a>
-      ${card.genMain} ${genSubsText} | 期限:${card.fireLimitDate}`
+      ${general.stateName} <a href="${general.url}" target="_blank">${general.version} ${general.rarity}${general.name}</a>
+      ${card.genMain} ${genSubsText}${displayHireLimitDate}`
+  }
+
+  _dateFormat (stringDate, formatFunc) {
+    if (!stringDate || stringDate.length !== 14) {
+      return ''
+    }
+    return formatFunc({
+      yyyy: stringDate.substr(0, 4),
+      MM: stringDate.substr(4, 2),
+      dd: stringDate.substr(6, 2),
+      hh: stringDate.substr(8, 2),
+      mm: stringDate.substr(10, 2),
+      ss: stringDate.substr(12, 2)
+    })
   }
 }

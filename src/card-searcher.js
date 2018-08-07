@@ -37,25 +37,13 @@ module.exports = class CardSearcher {
     // genSubIndexes.sort()
     const genSubs = genSubIndexes
       .map(v => this.baseData['GEN_SUB'][v]['name_short'])
-    const fireLimitDate = this._dateFormat(card['hire_limit_date'])
+    const hireLimitDate = card['hire_limit_date']
     return {
       number: card.number,
       genMain,
       genSubs,
-      fireLimitDate
+      hireLimitDate
     }
-  }
-
-  _dateFormat (stringDate) {
-    if (!stringDate || stringDate.length !== 14) {
-      return ''
-    }
-    // yyyyMMddhhmmss -> MM/dd hh:mm
-    const MM = stringDate.substr(4, 2)
-    const dd = stringDate.substr(6, 2)
-    const hh = stringDate.substr(8, 2)
-    const mm = stringDate.substr(10, 2)
-    return `${MM}/${dd} ${hh}:${mm}`
   }
 
   _createLabeledGeneral (general) {
@@ -63,6 +51,7 @@ module.exports = class CardSearcher {
       return null
     }
     const personal = this.baseData['PERSONAL'][parseInt(general.personal)]
+    const state = this.baseData['STATE'][parseInt(general.state)]
     const major = general['major_version']
     const verType = this.baseData['VER_TYPE'][parseInt(general['ver_type'])]
     const minor = verType.name === 'Ex' ? 'EX' : general['add_version']
@@ -72,6 +61,7 @@ module.exports = class CardSearcher {
     return {
       name: personal.name,
       rarity: general.rarity,
+      stateName: state['name_short'],
       version,
       url,
       major,
