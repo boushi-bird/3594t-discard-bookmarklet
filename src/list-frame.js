@@ -112,10 +112,10 @@ module.exports = class ListFrame {
     this._partitionHideLimitGroup(selectedResults).forEach(({ min, max, list }) => {
       const hireLimit = this._document.createElement('div')
       if (max !== min) {
-        hireLimit.innerHTML = `<br />
+        hireLimit.innerHTML = `<br /><br />
 登用期限: ${this._dateFormat(min, hireLimitFormat)} - ${this._dateFormat(max, hireLimitFormat)}`
       } else {
-        hireLimit.innerHTML = `<br />
+        hireLimit.innerHTML = `<br /><br />
 登用期限: ${this._dateFormat(min, hireLimitFormat)}`
       }
       tempElm.appendChild(hireLimit)
