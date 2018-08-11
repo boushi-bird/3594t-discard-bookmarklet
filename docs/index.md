@@ -17,7 +17,13 @@ title: TOP
 
 ### ブックマークレットの登録
 
-1. [リンク](bookmarklet/main.js) を開き表示された内容を全部選択しコピーする。
+[bookmarklet/main.js](bookmarklet/main.js) 
+
+{::nomarkdown}
+<iframe src="bookmarklet/main.js" style="width: 100%;"></iframe>
+{:/nomarkdown}
+
+1. 上記枠内の内容を全部選択しコピーする。  
 2. ブラウザのブックマークに登録する。
   * 登録方法は `ブックマークレット 登録方法 (お使いのWebブラウザ名)` で調べてみて下さい。
 
