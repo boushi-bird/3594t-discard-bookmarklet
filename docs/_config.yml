@@ -2,4 +2,7 @@ theme: jekyll-theme-cayman
 lang: ja
 title: 三国志大戦 解任ブックマークレット
 description: 三国志大戦用ブックマークレット(非公式ツール)
-google_analytics:  UA-16491560-3
+url: https://boushi-bird.github.io
+plugins:
+  - jekyll-sitemap
+google_tag_manager: GTM-NFHN8MZ
