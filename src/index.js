@@ -1,7 +1,7 @@
 const CardSearcher = require('./card-searcher')
 const ListFrame = require('./list-frame')
 
-const scriptId = 'VsD8NEfx'
+const scriptId = configDefines.scriptId
 
 const listFrame = new ListFrame(document)
 

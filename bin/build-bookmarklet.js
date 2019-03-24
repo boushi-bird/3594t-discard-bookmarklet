@@ -4,9 +4,7 @@ const path = require('path')
 const fs = require('fs')
 const UglifyJS = require('uglify-es')
 
-let embedJsUrl = process.env.NODE_ENV === 'production'
-  ? 'https://boushi-bird.github.io/3594t-discard-bookmarklet/scripts/bundle.js'
-  : 'http://localhost:8080/bundle.js'
+const { scriptId, embedJsUrl } = require('../config/defines')
 
 const bookmarkletFile = path.resolve(__dirname, '../bookmarklet/index.js')
 
@@ -14,6 +12,7 @@ const content = fs.readFileSync(bookmarkletFile, 'utf-8')
 
 const builtJs = content
   .replace('<JS_URL>', embedJsUrl)
+  .replace('<SCRIPT_ID>', scriptId)
 
 const { code, error } = UglifyJS.minify(builtJs, {
   mangle: true,

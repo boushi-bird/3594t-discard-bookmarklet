@@ -10,4 +10,4 @@
   s.src = u;
   s.id = i;
   d.body.appendChild(s);
-})(window, document, '<JS_URL>', 'VsD8NEfx');
+})(window, document, '<JS_URL>', '<SCRIPT_ID>');

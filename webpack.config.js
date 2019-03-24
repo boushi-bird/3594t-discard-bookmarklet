@@ -1,4 +1,9 @@
 const path = require('path')
+const webpack = require('webpack')
+const defines = require('./config/defines')
+
+const objectMap = (o, func) => Object.assign({}, ...Object.entries(o).map(([k, v]) => func(k, v)))
+const objectMapKeys = (o, func) => objectMap(defines, (k, v) => ({[func(k)]: v}))
 
 const mode = (process.env.NODE_ENV || 'development')
 
@@ -11,6 +16,9 @@ module.exports = {
     path: path.resolve(__dirname, 'docs/scripts'),
     filename: '[name].js'
   },
+  plugins: [
+    new webpack.DefinePlugin(objectMapKeys(defines, k => `configDefines.${k}`))
+  ],
   module: {
     rules: [
       {
