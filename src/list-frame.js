@@ -155,16 +155,8 @@ module.exports = class ListFrame {
       if (current == null) {
         return true
       }
-      // 20枚以上
-      if (current.list.length >= 20) {
-        return true
-      }
-      // 5枚以上かつ日付が変わったら
-      if (current.list.length >= 5 && compare(current.min, hireLimitDate) !== 0) {
-        return true
-      }
-      // 3日以上空いている
-      if (compare(current.max, hireLimitDate) >= 3000000) {
+      // 日付が変わったら
+      if (compare(current.min, hireLimitDate) !== 0) {
         return true
       }
       return false
