@@ -18,10 +18,10 @@ module.exports = class ListFrame {
     iframe.style.position = 'absolute'
     iframe.style.top = '0px'
     iframe.style.left = '0px'
-    iframe.style.width = '90vw'
+    iframe.style.width = '90%'
     iframe.style.minWidth = '480px'
     iframe.style.maxWidth = '720px'
-    iframe.style.height = '98vh'
+    iframe.style.height = '98%'
     iframe.style.backgroundColor = 'white'
     iframe.style.zIndex = 1000
     document.body.appendChild(iframe)
