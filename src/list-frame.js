@@ -102,11 +102,17 @@ module.exports = class ListFrame {
       global.alert('1つ以上選択する必要があります')
       return
     }
+    const hasPocket = selectedResults.some(g => g.card.pocket)
     const tempElm = this._document.createElement('div')
     this._document.body.appendChild(tempElm)
     const description = this._document.createElement('div')
-    description.innerHTML = `武将名のリンクから登用ページへ行けます
+    let descriptionHtml = `武将名のリンクから登用ページへ行けます
 <br />`
+    if (hasPocket) {
+      descriptionHtml += `(ぽ)・・・ぽけっと武将
+<br />`
+    }
+    description.innerHTML = descriptionHtml
     tempElm.appendChild(description)
     const hireLimitFormat = ({yyyy, MM, dd, hh, mm}) => `${yyyy}/${MM}/${dd} ${hh}:${mm}`
     this._partitionHideLimitGroup(selectedResults).forEach(({ min, max, list }) => {
@@ -296,7 +302,7 @@ module.exports = class ListFrame {
       displayHireLimitDate = ' | 期限:' + this._dateFormat(card.hireLimitDate, ({MM, dd, hh, mm}) => `${MM}/${dd} ${hh}:${mm}`)
     }
     return `${card.number}
-      ${general.stateName} <a href="${general.url}" target="_blank">${general.version} ${general.rarity}${general.name}</a>
+      ${card.pocket ? '(ぽ)' : ''} ${general.stateName} <a href="${general.url}" target="_blank">${general.version} ${general.rarity}${general.name}</a>
       ${card.genMain} ${genSubsText}${displayHireLimitDate}`
   }
 

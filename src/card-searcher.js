@@ -38,11 +38,13 @@ module.exports = class CardSearcher {
     const genSubs = genSubIndexes
       .map(v => this.baseData['GEN_SUB'][v]['name_short'])
     const hireLimitDate = card['hire_limit_date']
+    const pocket = card['pocket'] === '1'
     return {
       number: card.number,
       genMain,
       genSubs,
-      hireLimitDate
+      hireLimitDate,
+      pocket
     }
   }
 
