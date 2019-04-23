@@ -8,6 +8,9 @@ module.exports = `
 <div style="padding-left:40px;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;">
 <button id="select_all">すべて選択</button>
 <button id="clear_all">すべて解除</button>
+<input id="select_normal" type="checkbox" checked="checked" style="-ms-transform:scale(1.5,1.5);-webkit-transform:scale(1.5,1.5);transform:scale(1.5,1.5);"><label for="select_sr">通常</label>
+<input id="select_pocket" type="checkbox" checked="checked" style="-ms-transform:scale(1.5,1.5);-webkit-transform:scale(1.5,1.5);transform:scale(1.5,1.5);"><label for="select_r">ぽけっと</label>
+|
 <input id="select_sr" type="checkbox" checked="checked" style="-ms-transform:scale(1.5,1.5);-webkit-transform:scale(1.5,1.5);transform:scale(1.5,1.5);"><label for="select_sr">SR</label>
 <input id="select_r" type="checkbox" checked="checked" style="-ms-transform:scale(1.5,1.5);-webkit-transform:scale(1.5,1.5);transform:scale(1.5,1.5);"><label for="select_r">R</label>
 <input id="select_other" type="checkbox" checked="checked" style="-ms-transform:scale(1.5,1.5);-webkit-transform:scale(1.5,1.5);transform:scale(1.5,1.5);"><label for="select_other">その他</label>

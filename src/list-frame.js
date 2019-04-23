@@ -30,6 +30,10 @@ module.exports = class ListFrame {
     this.results = []
     this.versionFilters = {}
     this.filterCondition = {
+      verTypes: {
+        normal: true,
+        pocket: true
+      },
       rarities: {
         sr: true,
         r: true,
@@ -58,6 +62,18 @@ module.exports = class ListFrame {
     const clearAll = this._document.getElementById('clear_all')
     clearAll.addEventListener('click', () => {
       this._selectionChangeAll(false)
+    })
+    const selectNormal = this._document.getElementById('select_normal')
+    const selectPocket = this._document.getElementById('select_pocket')
+    const selectVertypes = [selectNormal, selectPocket]
+    selectVertypes.forEach((select) => {
+      select.addEventListener('click', () => {
+        this.filterCondition.verTypes = {
+          normal: selectNormal.checked,
+          pocket: selectPocket.checked
+        }
+        this._updateSelectList()
+      })
     })
     const selectSR = this._document.getElementById('select_sr')
     const selectR = this._document.getElementById('select_r')
@@ -215,6 +231,15 @@ module.exports = class ListFrame {
 
   _getVisibleResults () {
     return this.results
+      .filter(({ card: { pocket: hasPocket } }) => {
+        const { verTypes: { normal, pocket } } = this.filterCondition
+        console.log(this.filterCondition)
+        if (hasPocket) {
+          return pocket
+        } else {
+          return normal
+        }
+      })
       .filter(({ general: { rarity } }) => {
         const { rarities: { sr, r, other } } = this.filterCondition
         if (rarity === 'SR') {
