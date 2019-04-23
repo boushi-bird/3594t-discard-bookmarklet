@@ -259,8 +259,8 @@ module.exports = class ListFrame {
   }
 
   _updateFilters () {
-    const filter = this._document.getElementById('filter')
-    removeChildAll(filter)
+    const filterVersions = this._document.getElementById('filter-versions')
+    removeChildAll(filterVersions)
     const versions = Object.keys(this.versionFilters)
     versions.sort((v1, v2) => {
       return parseInt(this.versionFilters[v1]) - parseInt(this.versionFilters[v2])
@@ -284,9 +284,10 @@ module.exports = class ListFrame {
       label.setAttribute('for', id)
       label.setAttribute('style', 'margin-right:10px;')
       label.innerHTML = version
-      filter.appendChild(checkBox)
-      filter.appendChild(label)
+      filterVersions.appendChild(checkBox)
+      filterVersions.appendChild(label)
     })
+    const filter = this._document.getElementById('filter')
     const showFilter = this._document.getElementById('show_filter')
     if (versions.length > 0) {
       showFilter.style.display = 'inline'
