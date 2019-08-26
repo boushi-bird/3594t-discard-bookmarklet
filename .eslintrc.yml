@@ -1,3 +1,20 @@
-extends: standard
+root: true
+extends:
+  - standard
+  - 'plugin:@typescript-eslint/recommended'
+  - 'prettier/@typescript-eslint'
+  - plugin:prettier/recommended
+parser: '@typescript-eslint/parser'
+parserOptions:
+  ecmaVersion: 2018
+  project: './tsconfig.json'
+  sourceType: module
+plugins:
+  - '@typescript-eslint'
+rules:
+  prettier/prettier:
+    - warn
+  no-useless-constructor:
+    - off
 globals:
   configDefines: false

@@ -1,4 +1,4 @@
-module.exports = `
+const iframeBody = `
 <button id="close" style="width:100%;max-width:380px;height:30px;">Close</button>
 <h3>三国志大戦 解任ブックマークレット</h3>
 <button id="copy">選択した武将をコピー</button>
@@ -24,3 +24,4 @@ module.exports = `
 <div id="main">
 </div>
 `
+export default iframeBody
