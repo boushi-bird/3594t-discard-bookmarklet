@@ -308,7 +308,6 @@ export default class ListFrame {
         const {
           verTypes: { normal, pocket },
         } = this.filterCondition
-        console.log(this.filterCondition)
         if (hasPocket) {
           return pocket
         } else {
