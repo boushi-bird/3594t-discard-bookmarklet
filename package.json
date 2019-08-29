@@ -16,7 +16,12 @@
     "fix:es": "eslint --ext .js,.ts,.tsx --fix ."
   },
   "author": "boushi-bird <boushi-bird@users.noreply.github.com>",
-  "license": "ISC",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/boushi-bird/3594t-discard-bookmarklet.git"
+  },
+  "private": true,
   "dependencies": {},
   "devDependencies": {
     "@types/uglify-es": "^3.0.0",
