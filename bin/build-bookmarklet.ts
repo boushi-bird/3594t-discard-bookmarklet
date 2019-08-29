@@ -1,10 +1,11 @@
-#!/usr/bin/env node
+#!/usr/bin/env ts-node
 
-const path = require('path')
-const fs = require('fs')
-const UglifyJS = require('uglify-es')
+import path from 'path'
+import fs from 'fs'
+import UglifyJS from 'uglify-es'
+import defines from '../config/defines'
 
-const { scriptId, embedJsUrl } = require('../config/defines')
+const { scriptId, embedJsUrl } = defines
 
 const bookmarkletFile = path.resolve(__dirname, '../bookmarklet/index.js')
 
@@ -19,8 +20,8 @@ const { code, error } = UglifyJS.minify(builtJs, {
   compress: {
     expression: true,
     evaluate: false,
-    reduce_vars: false
-  }
+    reduce_vars: false, // eslint-disable-line @typescript-eslint/camelcase
+  },
 })
 
 if (error) {

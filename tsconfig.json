@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "alwaysStrict": true,
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "noImplicitAny": true,
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "noUnusedLocals": true,
+    "sourceMap": true,
+    "strictNullChecks": true,
+    "target": "ES5",
+    "module": "es2015"
+  },
+  "include": ["*.ts", "src\/**\/*", "bin\/*.ts"],
+  "exclude": ["node_modules", "bookmarklet"]
+}
