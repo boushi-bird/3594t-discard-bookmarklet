@@ -30,7 +30,7 @@ const config: Configuration = {
     rules: [
       {
         test: /\.tsx?$/,
-        use: ['ts-loader'],
+        use: ['babel-loader'],
       },
     ],
   },
