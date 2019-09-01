@@ -1,0 +1,1 @@
+javascript:(function()%7B%22use%20strict%22%3B!function(t%2Ce%2Ci%2Cd%2Cs)%7Bif(t%5Bd%5D)return%20t%5Bd%5D()%3B(s%3De.getElementById(d))%7C%7C((s%3De.createElement(%22script%22)).src%3D%22https%3A%2F%2Fboushi-bird.github.io%2F3594t-discard-bookmarklet%2Fscripts%2Fbundle.js%22%2Cs.id%3Dd%2Ce.body.appendChild(s))%7D(window%2Cdocument%2C0%2C%22VsD8NEfx%22)%3B%7D)()

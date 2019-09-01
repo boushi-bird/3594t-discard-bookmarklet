@@ -1,0 +1,8 @@
+theme: jekyll-theme-cayman
+lang: ja
+title: 三国志大戦 解任ブックマークレット
+description: 三国志大戦用ブックマークレット(非公式ツール)
+plugins:
+  - jekyll-sitemap
+url: 'https://boushi-bird.github.io'
+google_tag_manager: GTM-NFHN8MZ
