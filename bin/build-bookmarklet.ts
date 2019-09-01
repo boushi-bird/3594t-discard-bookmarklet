@@ -5,11 +5,23 @@ import fs from 'fs'
 import UglifyJS from 'uglify-es'
 import defines from '../config/defines'
 
+import { charset, distDir } from './config'
+
 const { scriptId, embedJsUrl } = defines
 
-const bookmarkletFile = path.resolve(__dirname, '../bookmarklet/index.js')
+const distBookmarkletDir = path.resolve(distDir, 'bookmarklet')
 
-const content = fs.readFileSync(bookmarkletFile, 'utf-8')
+if (!fs.existsSync(distBookmarkletDir)) {
+  fs.mkdirSync(distBookmarkletDir, { recursive: true })
+}
+
+const srcBookmarkletFile = path.resolve(__dirname, '../bookmarklet/index.js')
+const distBookmarkletFile = path.resolve(
+  distBookmarkletDir,
+  process.env.NODE_ENV === 'production' ? 'main.js' : 'local.js'
+)
+
+const content = fs.readFileSync(srcBookmarkletFile, charset)
 
 const builtJs = content
   .replace('<JS_URL>', embedJsUrl)
@@ -20,7 +32,7 @@ const { code, error } = UglifyJS.minify(builtJs, {
   compress: {
     expression: true,
     evaluate: false,
-    reduce_vars: false, // eslint-disable-line @typescript-eslint/camelcase
+    reduce_vars: false,
   },
 })
 
@@ -28,5 +40,9 @@ if (error) {
   console.error(error)
   process.exit(1)
 } else {
-  console.log(`javascript:${encodeURIComponent(code)}`)
+  fs.writeFileSync(
+    distBookmarkletFile,
+    `javascript:${encodeURIComponent(code)}\n`,
+    charset
+  )
 }

@@ -5,7 +5,7 @@ const embedJsUrl =
 
 const scriptId = 'VsD8NEfx'
 
-const defines: { embedJsUrl: string; scriptId: string } = {
+const defines = {
   embedJsUrl,
   scriptId,
 }

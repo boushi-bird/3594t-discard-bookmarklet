@@ -59,6 +59,26 @@ jobs:
           name: Build
           command: npm run build
 
+  deploy:
+
+    docker:
+      - image: circleci/node:10
+    environment:
+      GIT_AUTHOR_EMAIL: circleci@example.com
+      GIT_AUTHOR_NAME: Circle CI
+      GIT_COMMITTER_EMAIL: circleci@example.com
+      GIT_COMMITTER_NAME: Circle CI
+
+    working_directory: ~/repo
+
+    steps:
+      - attach_workspace:
+          at: ~/
+
+      - run:
+          name: Deploy
+          command: npm run deploy
+
 workflows:
   version: 2
   main:
@@ -70,3 +90,11 @@ workflows:
       - build:
           requires:
             - install
+      - deploy:
+          requires:
+            - lint
+            - build
+          filters:
+            branches:
+              only:
+                - master
