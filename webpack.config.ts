@@ -16,7 +16,7 @@ const config: Configuration = {
     bundle: path.resolve(__dirname, 'src/index.ts'),
   },
   output: {
-    path: path.resolve(__dirname, 'docs/scripts'),
+    path: path.resolve(__dirname, 'dist/scripts'),
     filename: '[name].js',
   },
   devtool: isProduction ? false : 'inline-source-map',
