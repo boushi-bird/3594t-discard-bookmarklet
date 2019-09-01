@@ -1,5 +1,4 @@
-import { BaseData } from './baseData'
-import { MemberData } from './memberData'
+import { BaseData, MemberData } from '@boushi-bird/3594t-net-datalist/read-only'
 
 type General = BaseData['GENERAL'][number]
 type Card = MemberData['CARD'][number]

@@ -1,5 +1,4 @@
-import { BaseData } from '../baseData'
-import { MemberData } from '../memberData'
+import { BaseData, MemberData } from '@boushi-bird/3594t-net-datalist/read-only'
 
 declare global {
   let configDefines: { [key: string]: string }
