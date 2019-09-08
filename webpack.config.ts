@@ -8,7 +8,10 @@ const convertObjectKeys = <O extends { [key: string]: any }>( // eslint-disable-
   o: O,
   func: (key: string) => string
 ): O =>
-  Object.assign({}, ...Object.entries(o).map(([k, v]) => ({ [func(k)]: v })))
+  Object.assign(
+    {},
+    ...Object.entries(o).map(([k, v]) => ({ [func(k)]: `'${v}'` }))
+  )
 
 const config: Configuration = {
   mode: isProduction ? 'production' : 'development',
