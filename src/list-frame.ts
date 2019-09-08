@@ -1,3 +1,4 @@
+import iframeStyle from './templates/iframe-style.html'
 import iframeBody from './templates/iframe-body.html'
 import CardSearcher, { LabeledCard, LabeledGeneral } from './card-searcher'
 
@@ -51,15 +52,20 @@ export default class ListFrame {
 
   constructor(document: Document) {
     const iframe = document.createElement('iframe')
-    iframe.style.position = 'absolute'
-    iframe.style.top = '0px'
-    iframe.style.left = '0px'
+    const hRatio = 0.9
+    iframe.style.position = 'fixed'
+    iframe.style.top = '5px'
+    iframe.style.left = '5px'
     iframe.style.width = '90%'
     iframe.style.minWidth = '480px'
     iframe.style.maxWidth = '720px'
-    iframe.style.height = '98%'
+    iframe.style.minHeight = `${hRatio * 100}%`
+    iframe.style.height = `${window.innerHeight * hRatio}px`
     iframe.style.backgroundColor = 'white'
     iframe.style.zIndex = '1000'
+    // window.addEventListener('resize', () => {
+    //   iframe.style.height = `${window.innerHeight * hRatio}px`
+    // })
     document.body.appendChild(iframe)
 
     this.iframe = iframe
@@ -81,8 +87,13 @@ export default class ListFrame {
     if (w) {
       this._document = w.document
       this._document.body.innerHTML = iframeBody
+      const domParser = new DOMParser()
+      const style = domParser.parseFromString(iframeStyle, 'text/html')
+      if (style.firstChild) {
+        this._document.head.appendChild(style.firstChild)
+      }
+      this._setupEvents()
     }
-    this._setupEvents()
   }
 
   _setupEvents(): void {
@@ -348,10 +359,7 @@ export default class ListFrame {
       const checkBox = this._document.createElement('input')
       checkBox.setAttribute('id', id)
       checkBox.setAttribute('type', 'checkbox')
-      checkBox.setAttribute(
-        'style',
-        '-ms-transform:scale(1.5,1.5);-webkit-transform:scale(1.5,1.5);transform:scale(1.5,1.5);'
-      )
+      checkBox.setAttribute('class', 'large-checkbox')
       checkBox.checked = this.filterCondition.versions.indexOf(version) >= 0
       checkBox.addEventListener('click', () => {
         const newVersions = this.filterCondition.versions.filter(
@@ -389,13 +397,7 @@ export default class ListFrame {
       const div = this._document.createElement('div')
       const checkBox = this._document.createElement('input')
       checkBox.setAttribute('type', 'checkbox')
-      checkBox.setAttribute(
-        'style',
-        '-ms-transform:scale(1.5,1.5);-webkit-transform:scale(1.5,1.5);transform:scale(1.5,1.5);'
-      )
-      checkBox.style.width = '24px'
-      checkBox.style.height = '24px'
-      checkBox.style.margin = '10px'
+      checkBox.setAttribute('class', 'list-checkbox large-checkbox')
       checkBox.checked = result.selected
       checkBox.addEventListener('click', () => {
         result.selected = checkBox.checked
