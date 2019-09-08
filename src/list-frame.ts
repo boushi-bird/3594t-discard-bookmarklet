@@ -2,10 +2,7 @@ import iframeStyle from './templates/iframe-style.html'
 import iframeBody from './templates/iframe-body.html'
 import CardSearcher, { LabeledCard, LabeledGeneral } from './card-searcher'
 
-const removeChildAll = (element: HTMLElement | null): void => {
-  if (!element) {
-    return
-  }
+const removeChildAll = (element: HTMLElement): void => {
   while (element.firstChild) {
     element.removeChild(element.firstChild)
   }
@@ -92,11 +89,11 @@ export default class ListFrame {
       if (style.firstChild) {
         this._document.head.appendChild(style.firstChild)
       }
-      this._setupEvents()
+      this.setupEvents()
     }
   }
 
-  _setupEvents(): void {
+  private setupEvents(): void {
     const close = this._document.getElementById('close')
     close &&
       close.addEventListener('click', () => {
@@ -105,17 +102,17 @@ export default class ListFrame {
     const copy = this._document.getElementById('copy')
     copy &&
       copy.addEventListener('click', () => {
-        this._copy()
+        this.copy()
       })
     const selectAll = this._document.getElementById('select_all')
     selectAll &&
       selectAll.addEventListener('click', () => {
-        this._selectionChangeAll(true)
+        this.selectionChangeAll(true)
       })
     const clearAll = this._document.getElementById('clear_all')
     clearAll &&
       clearAll.addEventListener('click', () => {
-        this._selectionChangeAll(false)
+        this.selectionChangeAll(false)
       })
     const selectNormal = this._document.getElementById(
       'select_normal'
@@ -131,7 +128,7 @@ export default class ListFrame {
             normal: !!selectNormal && selectNormal.checked,
             pocket: !!selectPocket && selectPocket.checked,
           }
-          this._updateSelectList()
+          this.updateSelectList()
         })
     })
     const selectSR = this._document.getElementById(
@@ -152,7 +149,7 @@ export default class ListFrame {
             r: !!selectR && selectR.checked,
             other: !!selectOther && selectOther.checked,
           }
-          this._updateSelectList()
+          this.updateSelectList()
         })
     })
     const filter = this._document.getElementById('filter')
@@ -172,15 +169,15 @@ export default class ListFrame {
     this.iframe.style.display = 'none'
   }
 
-  _selectionChangeAll(select: boolean): void {
+  private selectionChangeAll(select: boolean): void {
     this.results.forEach(result => {
       result.selected = select
     })
-    this._updateSelectList()
+    this.updateSelectList()
   }
 
-  _copy(): void {
-    const selectedResults = this._getVisibleResults().filter(v => v.selected)
+  private copy(): void {
+    const selectedResults = this.getVisibleResults().filter(v => v.selected)
     if (selectedResults.length === 0) {
       window.alert('1つ以上選択する必要があります')
       return
@@ -204,23 +201,23 @@ export default class ListFrame {
       hh,
       mm,
     }) => `${yyyy}/${MM}/${dd} ${hh}:${mm}`
-    this._partitionHideLimitGroup(selectedResults).forEach(
+    this.partitionHideLimitGroup(selectedResults).forEach(
       ({ min, max, list }) => {
         const hireLimit = this._document.createElement('div')
         if (max !== min) {
           hireLimit.innerHTML = `<br /><br />
-登用期限: ${this._dateFormat(min, hireLimitFormat)} - ${this._dateFormat(
+登用期限: ${this.dateFormat(min, hireLimitFormat)} - ${this.dateFormat(
             max,
             hireLimitFormat
           )}`
         } else {
           hireLimit.innerHTML = `<br /><br />
-登用期限: ${this._dateFormat(min, hireLimitFormat)}`
+登用期限: ${this.dateFormat(min, hireLimitFormat)}`
         }
         tempElm.appendChild(hireLimit)
         list.forEach(result => {
           const div = this._document.createElement('div')
-          div.innerHTML = this._createCardInfoHtml(result, false)
+          div.innerHTML = this.createCardInfoHtml(result, false)
           tempElm.appendChild(div)
         })
       }
@@ -246,7 +243,7 @@ export default class ListFrame {
     }
   }
 
-  _partitionHideLimitGroup(selectedResults: Result[]): ResultGroup[] {
+  private partitionHideLimitGroup(selectedResults: Result[]): ResultGroup[] {
     let current: ResultGroup | null = null
     const results: ResultGroup[] = []
     const compare = (v1: string, v2: string): number => {
@@ -309,11 +306,11 @@ export default class ListFrame {
         this.filterCondition.versions.push(verLabel)
       }
     })
-    this._updateFilters()
-    this._updateSelectList()
+    this.updateFilters()
+    this.updateSelectList()
   }
 
-  _getVisibleResults(): Result[] {
+  private getVisibleResults(): Result[] {
     return this.results
       .filter(({ card: { pocket: hasPocket } }) => {
         const {
@@ -345,8 +342,11 @@ export default class ListFrame {
       })
   }
 
-  _updateFilters(): void {
+  private updateFilters(): void {
     const filterVersions = this._document.getElementById('filter-versions')
+    if (!filterVersions) {
+      return
+    }
     removeChildAll(filterVersions)
     const versions = Object.keys(this.versionFilters)
     versions.sort((v1, v2) => {
@@ -369,14 +369,14 @@ export default class ListFrame {
           newVersions.push(version)
         }
         this.filterCondition.versions = newVersions
-        this._updateSelectList()
+        this.updateSelectList()
       })
       const label = this._document.createElement('label')
       label.setAttribute('for', id)
       label.setAttribute('style', 'margin-right:10px;')
       label.innerHTML = version
-      filterVersions && filterVersions.appendChild(checkBox)
-      filterVersions && filterVersions.appendChild(label)
+      filterVersions.appendChild(checkBox)
+      filterVersions.appendChild(label)
     })
     const filter = this._document.getElementById('filter')
     const showFilter = this._document.getElementById('show_filter')
@@ -390,10 +390,13 @@ export default class ListFrame {
     filter && (filter.style.display = 'none')
   }
 
-  _updateSelectList(): void {
+  private updateSelectList(): void {
     const selectList = this._document.getElementById('main')
+    if (!selectList) {
+      return
+    }
     removeChildAll(selectList)
-    this._getVisibleResults().forEach(result => {
+    this.getVisibleResults().forEach(result => {
       const div = this._document.createElement('div')
       const checkBox = this._document.createElement('input')
       checkBox.setAttribute('type', 'checkbox')
@@ -404,20 +407,23 @@ export default class ListFrame {
       })
       const span = this._document.createElement('span')
       span.style.verticalAlign = 'super'
-      span.innerHTML = this._createCardInfoHtml(result)
+      span.innerHTML = this.createCardInfoHtml(result)
       div.appendChild(checkBox)
       div.appendChild(span)
-      selectList && selectList.appendChild(div)
+      selectList.appendChild(div)
     })
   }
 
-  _createCardInfoHtml({ card, general }: Result, showHireLimit = true): string {
+  private createCardInfoHtml(
+    { card, general }: Result,
+    showHireLimit = true
+  ): string {
     const genSubsText = card.genSubs.map(v => v[0]).join('')
     let displayHireLimitDate = ''
     if (showHireLimit) {
       displayHireLimitDate =
         ' | 期限:' +
-        this._dateFormat(
+        this.dateFormat(
           card.hireLimitDate,
           ({ MM, dd, hh, mm }) => `${MM}/${dd} ${hh}:${mm}`
         )
@@ -429,7 +435,7 @@ export default class ListFrame {
       ${card.genMain} ${genSubsText}${displayHireLimitDate}`
   }
 
-  _dateFormat(
+  private dateFormat(
     stringDate: string | null,
     formatFunc: (parts: DateParts) => string
   ): string {
