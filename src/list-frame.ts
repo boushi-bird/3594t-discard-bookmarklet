@@ -1,4 +1,4 @@
-import iframeBody from './iframe-body'
+import iframeBody from './templates/iframe-body.html'
 import CardSearcher, { LabeledCard, LabeledGeneral } from './card-searcher'
 
 const removeChildAll = (element: HTMLElement | null): void => {
