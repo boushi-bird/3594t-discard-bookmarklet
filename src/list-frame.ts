@@ -1,6 +1,8 @@
 import iframeStyle from './templates/iframe-style.html'
 import iframeBody from './templates/iframe-body.html'
+import copyPlainText from './templates/copy-plain-text.html'
 import CardSearcher, { LabeledCard, LabeledGeneral } from './card-searcher'
+import { State, GenSub } from './data-types'
 
 const removeChildAll = (element: HTMLElement): void => {
   while (element.firstChild) {
@@ -217,7 +219,7 @@ export default class ListFrame {
         tempElm.appendChild(hireLimit)
         list.forEach(result => {
           const div = this._document.createElement('div')
-          div.innerHTML = this.createCardInfoHtml(result, false)
+          div.innerHTML = this.createCopyCardInfoHtml(result)
           tempElm.appendChild(div)
         })
       }
@@ -414,25 +416,69 @@ export default class ListFrame {
     })
   }
 
-  private createCardInfoHtml(
-    { card, general }: Result,
-    showHireLimit = true
-  ): string {
-    const genSubsText = card.genSubs.map(v => v[0]).join('')
-    let displayHireLimitDate = ''
-    if (showHireLimit) {
-      displayHireLimitDate =
-        ' | 期限:' +
-        this.dateFormat(
-          card.hireLimitDate,
-          ({ MM, dd, hh, mm }) => `${MM}/${dd} ${hh}:${mm}`
-        )
+  private createCardInfoHtml(result: Result): string {
+    const displayHireLimitDate =
+      ' | 期限:' +
+      this.dateFormat(
+        result.card.hireLimitDate,
+        ({ MM, dd, hh, mm }) => `${MM}/${dd} ${hh}:${mm}`
+      )
+    return `${this.createCopyCardInfoHtml(result)}${displayHireLimitDate}`
+  }
+
+  private createCopyCardInfoHtml({ card, general }: Result): string {
+    const genSubsText = card.genSubs.map(this.createColoredGenSub).join('')
+    const p = this.p
+    return copyPlainText
+      .replace(p('CARD_NUMBER'), card.number)
+      .replace(p('POCKET'), card.pocket ? '(ぽ)' : '')
+      .replace(p('STATE'), this.createColoredState(general.state))
+      .replace(p('LINK'), general.url)
+      .replace(p('VERSION'), general.version)
+      .replace(p('RARITY'), general.rarity)
+      .replace(p('NAME'), general.name)
+      .replace(p('GEN_MAIN'), card.genMain.name_short)
+      .replace(p('GEN_SUBS'), `${genSubsText}`)
+  }
+
+  private createColoredState(state: State): string {
+    const { red, green, blue } = state
+    const padStartHex = (s: string): string => {
+      return ('00' + parseInt(s).toString(16)).substr(-2)
     }
-    return `${card.number}
-      ${card.pocket ? '(ぽ)' : ''} ${general.stateName} <a href="${
-      general.url
-    }" target="_blank">${general.version} ${general.rarity}${general.name}</a>
-      ${card.genMain} ${genSubsText}${displayHireLimitDate}`
+    const color =
+      '#' + padStartHex(red) + padStartHex(green) + padStartHex(blue)
+    return `<font color="${color}">${state.name_short}</font>`
+  }
+
+  private createColoredGenSub(genSub: GenSub): string {
+    const nameShort = genSub.name_short
+    let s
+    if (nameShort === '復活') {
+      s = '活'
+    } else {
+      s = nameShort[0]
+    }
+    let color = 'black'
+    switch (s) {
+      case '兵':
+        color = 'green'
+        break
+      case '速':
+        color = 'blue'
+        break
+      case '攻':
+        color = 'red'
+        break
+      case '活':
+        color = '#ffd12a'
+        break
+    }
+    return `<font color="${color}">${s}</font>`
+  }
+
+  private p(key: string): RegExp {
+    return new RegExp(`\\$\\{${key}\\}`, 'g')
   }
 
   private dateFormat(
