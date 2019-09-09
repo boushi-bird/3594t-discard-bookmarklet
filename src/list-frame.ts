@@ -444,7 +444,7 @@ export default class ListFrame {
   private createColoredState(state: State): string {
     const { red, green, blue } = state
     const padStartHex = (s: string): string => {
-      return ('00' + parseInt(s).toString(16)).substr(-2)
+      return ('00' + (parseInt(s) || 0).toString(16)).substr(-2)
     }
     const color =
       '#' + padStartHex(red) + padStartHex(green) + padStartHex(blue)
