@@ -1,10 +1,10 @@
-import iframeBody from './iframe-body'
+import iframeStyle from './templates/iframe-style.html'
+import iframeBody from './templates/iframe-body.html'
+import copyPlainText from './templates/copy-plain-text.html'
 import CardSearcher, { LabeledCard, LabeledGeneral } from './card-searcher'
+import { State, GenSub } from './data-types'
 
-const removeChildAll = (element: HTMLElement | null): void => {
-  if (!element) {
-    return
-  }
+const removeChildAll = (element: HTMLElement): void => {
   while (element.firstChild) {
     element.removeChild(element.firstChild)
   }
@@ -51,15 +51,20 @@ export default class ListFrame {
 
   constructor(document: Document) {
     const iframe = document.createElement('iframe')
-    iframe.style.position = 'absolute'
-    iframe.style.top = '0px'
-    iframe.style.left = '0px'
+    const hRatio = 0.9
+    iframe.style.position = 'fixed'
+    iframe.style.top = '5px'
+    iframe.style.left = '5px'
     iframe.style.width = '90%'
     iframe.style.minWidth = '480px'
     iframe.style.maxWidth = '720px'
-    iframe.style.height = '98%'
+    iframe.style.minHeight = `${hRatio * 100}%`
+    iframe.style.height = `${window.innerHeight * hRatio}px`
     iframe.style.backgroundColor = 'white'
     iframe.style.zIndex = '1000'
+    // window.addEventListener('resize', () => {
+    //   iframe.style.height = `${window.innerHeight * hRatio}px`
+    // })
     document.body.appendChild(iframe)
 
     this.iframe = iframe
@@ -81,11 +86,16 @@ export default class ListFrame {
     if (w) {
       this._document = w.document
       this._document.body.innerHTML = iframeBody
+      const domParser = new DOMParser()
+      const style = domParser.parseFromString(iframeStyle, 'text/html')
+      if (style.firstChild) {
+        this._document.head.appendChild(style.firstChild)
+      }
+      this.setupEvents()
     }
-    this._setupEvents()
   }
 
-  _setupEvents(): void {
+  private setupEvents(): void {
     const close = this._document.getElementById('close')
     close &&
       close.addEventListener('click', () => {
@@ -94,17 +104,17 @@ export default class ListFrame {
     const copy = this._document.getElementById('copy')
     copy &&
       copy.addEventListener('click', () => {
-        this._copy()
+        this.copy()
       })
     const selectAll = this._document.getElementById('select_all')
     selectAll &&
       selectAll.addEventListener('click', () => {
-        this._selectionChangeAll(true)
+        this.selectionChangeAll(true)
       })
     const clearAll = this._document.getElementById('clear_all')
     clearAll &&
       clearAll.addEventListener('click', () => {
-        this._selectionChangeAll(false)
+        this.selectionChangeAll(false)
       })
     const selectNormal = this._document.getElementById(
       'select_normal'
@@ -120,7 +130,7 @@ export default class ListFrame {
             normal: !!selectNormal && selectNormal.checked,
             pocket: !!selectPocket && selectPocket.checked,
           }
-          this._updateSelectList()
+          this.updateSelectList()
         })
     })
     const selectSR = this._document.getElementById(
@@ -141,7 +151,7 @@ export default class ListFrame {
             r: !!selectR && selectR.checked,
             other: !!selectOther && selectOther.checked,
           }
-          this._updateSelectList()
+          this.updateSelectList()
         })
     })
     const filter = this._document.getElementById('filter')
@@ -161,15 +171,15 @@ export default class ListFrame {
     this.iframe.style.display = 'none'
   }
 
-  _selectionChangeAll(select: boolean): void {
+  private selectionChangeAll(select: boolean): void {
     this.results.forEach(result => {
       result.selected = select
     })
-    this._updateSelectList()
+    this.updateSelectList()
   }
 
-  _copy(): void {
-    const selectedResults = this._getVisibleResults().filter(v => v.selected)
+  private copy(): void {
+    const selectedResults = this.getVisibleResults().filter(v => v.selected)
     if (selectedResults.length === 0) {
       window.alert('1つ以上選択する必要があります')
       return
@@ -193,23 +203,23 @@ export default class ListFrame {
       hh,
       mm,
     }) => `${yyyy}/${MM}/${dd} ${hh}:${mm}`
-    this._partitionHideLimitGroup(selectedResults).forEach(
+    this.partitionHideLimitGroup(selectedResults).forEach(
       ({ min, max, list }) => {
         const hireLimit = this._document.createElement('div')
         if (max !== min) {
           hireLimit.innerHTML = `<br /><br />
-登用期限: ${this._dateFormat(min, hireLimitFormat)} - ${this._dateFormat(
+登用期限: ${this.dateFormat(min, hireLimitFormat)} - ${this.dateFormat(
             max,
             hireLimitFormat
           )}`
         } else {
           hireLimit.innerHTML = `<br /><br />
-登用期限: ${this._dateFormat(min, hireLimitFormat)}`
+登用期限: ${this.dateFormat(min, hireLimitFormat)}`
         }
         tempElm.appendChild(hireLimit)
         list.forEach(result => {
           const div = this._document.createElement('div')
-          div.innerHTML = this._createCardInfoHtml(result, false)
+          div.innerHTML = this.createCopyCardInfoHtml(result)
           tempElm.appendChild(div)
         })
       }
@@ -235,7 +245,7 @@ export default class ListFrame {
     }
   }
 
-  _partitionHideLimitGroup(selectedResults: Result[]): ResultGroup[] {
+  private partitionHideLimitGroup(selectedResults: Result[]): ResultGroup[] {
     let current: ResultGroup | null = null
     const results: ResultGroup[] = []
     const compare = (v1: string, v2: string): number => {
@@ -298,11 +308,11 @@ export default class ListFrame {
         this.filterCondition.versions.push(verLabel)
       }
     })
-    this._updateFilters()
-    this._updateSelectList()
+    this.updateFilters()
+    this.updateSelectList()
   }
 
-  _getVisibleResults(): Result[] {
+  private getVisibleResults(): Result[] {
     return this.results
       .filter(({ card: { pocket: hasPocket } }) => {
         const {
@@ -334,8 +344,11 @@ export default class ListFrame {
       })
   }
 
-  _updateFilters(): void {
+  private updateFilters(): void {
     const filterVersions = this._document.getElementById('filter-versions')
+    if (!filterVersions) {
+      return
+    }
     removeChildAll(filterVersions)
     const versions = Object.keys(this.versionFilters)
     versions.sort((v1, v2) => {
@@ -348,10 +361,7 @@ export default class ListFrame {
       const checkBox = this._document.createElement('input')
       checkBox.setAttribute('id', id)
       checkBox.setAttribute('type', 'checkbox')
-      checkBox.setAttribute(
-        'style',
-        '-ms-transform:scale(1.5,1.5);-webkit-transform:scale(1.5,1.5);transform:scale(1.5,1.5);'
-      )
+      checkBox.setAttribute('class', 'large-checkbox')
       checkBox.checked = this.filterCondition.versions.indexOf(version) >= 0
       checkBox.addEventListener('click', () => {
         const newVersions = this.filterCondition.versions.filter(
@@ -361,14 +371,14 @@ export default class ListFrame {
           newVersions.push(version)
         }
         this.filterCondition.versions = newVersions
-        this._updateSelectList()
+        this.updateSelectList()
       })
       const label = this._document.createElement('label')
       label.setAttribute('for', id)
       label.setAttribute('style', 'margin-right:10px;')
       label.innerHTML = version
-      filterVersions && filterVersions.appendChild(checkBox)
-      filterVersions && filterVersions.appendChild(label)
+      filterVersions.appendChild(checkBox)
+      filterVersions.appendChild(label)
     })
     const filter = this._document.getElementById('filter')
     const showFilter = this._document.getElementById('show_filter')
@@ -382,52 +392,96 @@ export default class ListFrame {
     filter && (filter.style.display = 'none')
   }
 
-  _updateSelectList(): void {
+  private updateSelectList(): void {
     const selectList = this._document.getElementById('main')
+    if (!selectList) {
+      return
+    }
     removeChildAll(selectList)
-    this._getVisibleResults().forEach(result => {
+    this.getVisibleResults().forEach(result => {
       const div = this._document.createElement('div')
       const checkBox = this._document.createElement('input')
       checkBox.setAttribute('type', 'checkbox')
-      checkBox.setAttribute(
-        'style',
-        '-ms-transform:scale(1.5,1.5);-webkit-transform:scale(1.5,1.5);transform:scale(1.5,1.5);'
-      )
-      checkBox.style.width = '24px'
-      checkBox.style.height = '24px'
-      checkBox.style.margin = '10px'
+      checkBox.setAttribute('class', 'list-checkbox large-checkbox')
       checkBox.checked = result.selected
       checkBox.addEventListener('click', () => {
         result.selected = checkBox.checked
       })
       const span = this._document.createElement('span')
       span.style.verticalAlign = 'super'
-      span.innerHTML = this._createCardInfoHtml(result)
+      span.innerHTML = this.createCardInfoHtml(result)
       div.appendChild(checkBox)
       div.appendChild(span)
-      selectList && selectList.appendChild(div)
+      selectList.appendChild(div)
     })
   }
 
-  _createCardInfoHtml({ card, general }: Result, showHireLimit = true): string {
-    const genSubsText = card.genSubs.map(v => v[0]).join('')
-    let displayHireLimitDate = ''
-    if (showHireLimit) {
-      displayHireLimitDate =
-        ' | 期限:' +
-        this._dateFormat(
-          card.hireLimitDate,
-          ({ MM, dd, hh, mm }) => `${MM}/${dd} ${hh}:${mm}`
-        )
-    }
-    return `${card.number}
-      ${card.pocket ? '(ぽ)' : ''} ${general.stateName} <a href="${
-      general.url
-    }" target="_blank">${general.version} ${general.rarity}${general.name}</a>
-      ${card.genMain} ${genSubsText}${displayHireLimitDate}`
+  private createCardInfoHtml(result: Result): string {
+    const displayHireLimitDate =
+      ' | 期限:' +
+      this.dateFormat(
+        result.card.hireLimitDate,
+        ({ MM, dd, hh, mm }) => `${MM}/${dd} ${hh}:${mm}`
+      )
+    return `${this.createCopyCardInfoHtml(result)}${displayHireLimitDate}`
   }
 
-  _dateFormat(
+  private createCopyCardInfoHtml({ card, general }: Result): string {
+    const genSubsText = card.genSubs.map(this.createColoredGenSub).join('')
+    const p = this.p
+    return copyPlainText
+      .replace(p('CARD_NUMBER'), card.number)
+      .replace(p('POCKET'), card.pocket ? '(ぽ)' : '')
+      .replace(p('STATE'), this.createColoredState(general.state))
+      .replace(p('LINK'), general.url)
+      .replace(p('VERSION'), general.version)
+      .replace(p('RARITY'), general.rarity)
+      .replace(p('NAME'), general.name)
+      .replace(p('GEN_MAIN'), card.genMain.name_short)
+      .replace(p('GEN_SUBS'), `${genSubsText}`)
+  }
+
+  private createColoredState(state: State): string {
+    const { red, green, blue } = state
+    const padStartHex = (s: string): string => {
+      return ('00' + (parseInt(s) || 0).toString(16)).substr(-2)
+    }
+    const color =
+      '#' + padStartHex(red) + padStartHex(green) + padStartHex(blue)
+    return `<font color="${color}">${state.name_short}</font>`
+  }
+
+  private createColoredGenSub(genSub: GenSub): string {
+    const nameShort = genSub.name_short
+    let s
+    if (nameShort === '復活') {
+      s = '活'
+    } else {
+      s = nameShort[0]
+    }
+    let color = 'black'
+    switch (s) {
+      case '兵':
+        color = 'green'
+        break
+      case '速':
+        color = 'blue'
+        break
+      case '攻':
+        color = 'red'
+        break
+      case '活':
+        color = '#ffd12a'
+        break
+    }
+    return `<font color="${color}">${s}</font>`
+  }
+
+  private p(key: string): RegExp {
+    return new RegExp(`\\$\\{${key}\\}`, 'g')
+  }
+
+  private dateFormat(
     stringDate: string | null,
     formatFunc: (parts: DateParts) => string
   ): string {

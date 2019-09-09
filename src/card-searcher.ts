@@ -1,12 +1,9 @@
-import { BaseData, MemberData } from '@boushi-bird/3594t-net-datalist/read-only'
-
-type General = BaseData['GENERAL'][number]
-type Card = MemberData['CARD'][number]
+import { BaseData, General, Card, State, GenMain, GenSub } from './data-types'
 
 export interface LabeledCard {
   number: string
-  genMain: string
-  genSubs: string[]
+  genMain: GenMain
+  genSubs: GenSub[]
   hireLimitDate: string
   pocket: boolean
 }
@@ -14,7 +11,7 @@ export interface LabeledCard {
 export interface LabeledGeneral {
   name: string
   rarity: string
-  stateName: string
+  state: State
   version: string
   url: string
   major: string
@@ -55,13 +52,13 @@ export default class CardSearcher {
     }
     const genMain = this.baseData.GEN_MAIN.filter(
       ({ key }) => key === card.gen_main
-    ).map(g => g.name_short)[0]
+    ).map(g => g)[0]
 
     const genSubIndexes = [card.gen_sub0, card.gen_sub1, card.gen_sub2]
       .filter(v => v !== '')
       .map(v => parseInt(v))
     // genSubIndexes.sort()
-    const genSubs = genSubIndexes.map(v => this.baseData.GEN_SUB[v].name_short)
+    const genSubs = genSubIndexes.map(v => this.baseData.GEN_SUB[v])
     const hireLimitDate = card.hire_limit_date
     const pocket = card.pocket === '1'
     return {
@@ -88,7 +85,7 @@ export default class CardSearcher {
     return {
       name: personal.name,
       rarity: general.rarity,
-      stateName: state.name_short,
+      state,
       version,
       url,
       major,

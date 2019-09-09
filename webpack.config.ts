@@ -35,6 +35,17 @@ const config: Configuration = {
         test: /\.tsx?$/,
         use: ['babel-loader'],
       },
+      {
+        test: /\.html$/,
+        use: [
+          {
+            loader: 'html-loader',
+            options: {
+              minimize: true,
+            },
+          },
+        ],
+      },
     ],
   },
   devServer: {
