@@ -1,5 +1,5 @@
-import path from 'path'
+import path from 'path';
 
-export const charset = 'utf-8'
+export const charset = 'utf-8';
 
-export const distDir = path.resolve(__dirname, '../dist')
+export const distDir = path.resolve(__dirname, '../dist');
