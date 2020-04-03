@@ -21,7 +21,7 @@ const run = (): void => {
 
   const searcher = new CardSearcher(window.base_data, window.member_data.CARD);
   const fireDate = window.member_card_fire_date;
-  const fireIndexes = fireDate.map(v => v.index);
+  const fireIndexes = fireDate.map((v) => v.index);
   listFrame.update(fireIndexes, searcher);
 };
 (window as any)[scriptId] = run; // eslint-disable-line @typescript-eslint/no-explicit-any

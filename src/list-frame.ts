@@ -32,7 +32,7 @@ type ResultGroup = {
 // polyfill
 Number.isNaN =
   Number.isNaN ||
-  function(value): boolean {
+  function (value): boolean {
     // eslint-disable-next-line no-self-compare
     return typeof value === 'number' && value !== value;
   };
@@ -123,7 +123,7 @@ export default class ListFrame {
       'select_pocket'
     ) as HTMLInputElement | null;
     const selectVertypes = [selectNormal, selectPocket];
-    selectVertypes.forEach(select => {
+    selectVertypes.forEach((select) => {
       select &&
         select.addEventListener('click', () => {
           this.filterCondition.verTypes = {
@@ -143,7 +143,7 @@ export default class ListFrame {
       'select_other'
     ) as HTMLInputElement | null;
     const selects = [selectSR, selectR, selectOther];
-    selects.forEach(select => {
+    selects.forEach((select) => {
       select &&
         select.addEventListener('click', () => {
           this.filterCondition.rarities = {
@@ -172,19 +172,19 @@ export default class ListFrame {
   }
 
   private selectionChangeAll(select: boolean): void {
-    this.results.forEach(result => {
+    this.results.forEach((result) => {
       result.selected = select;
     });
     this.updateSelectList();
   }
 
   private copy(): void {
-    const selectedResults = this.getVisibleResults().filter(v => v.selected);
+    const selectedResults = this.getVisibleResults().filter((v) => v.selected);
     if (selectedResults.length === 0) {
       window.alert('1つ以上選択する必要があります');
       return;
     }
-    const hasPocket = selectedResults.some(g => g.card.pocket);
+    const hasPocket = selectedResults.some((g) => g.card.pocket);
     const tempElm = this._document.createElement('div');
     this._document.body.appendChild(tempElm);
     const description = this._document.createElement('div');
@@ -217,7 +217,7 @@ export default class ListFrame {
 登用期限: ${this.dateFormat(min, hireLimitFormat)}`;
         }
         tempElm.appendChild(hireLimit);
-        list.forEach(result => {
+        list.forEach((result) => {
           const div = this._document.createElement('div');
           div.innerHTML = this.createCopyCardInfoHtml(result);
           tempElm.appendChild(div);
@@ -268,7 +268,7 @@ export default class ListFrame {
       current = { min: null, max: null, list: [] };
       results.push(current);
     };
-    selectedResults.forEach(r => {
+    selectedResults.forEach((r) => {
       const {
         card: { hireLimitDate },
       } = r;
@@ -291,7 +291,7 @@ export default class ListFrame {
     this.results = [];
     this.versionFilters = {};
     this.filterCondition.versions = [];
-    cardIndexes.forEach(index => {
+    cardIndexes.forEach((index) => {
       const { card, general } = searcher.searchByCardIndex(index);
       if (!card || !general) {
         return;
@@ -337,7 +337,7 @@ export default class ListFrame {
       })
       .filter(({ general: { major } }) => {
         const { versions } = this.filterCondition;
-        return versions.some(version => {
+        return versions.some((version) => {
           const verCondition = this.versionFilters[version];
           return major === verCondition;
         });
@@ -365,7 +365,7 @@ export default class ListFrame {
       checkBox.checked = this.filterCondition.versions.indexOf(version) >= 0;
       checkBox.addEventListener('click', () => {
         const newVersions = this.filterCondition.versions.filter(
-          v => v !== version
+          (v) => v !== version
         );
         if (checkBox.checked) {
           newVersions.push(version);
@@ -398,7 +398,7 @@ export default class ListFrame {
       return;
     }
     removeChildAll(selectList);
-    this.getVisibleResults().forEach(result => {
+    this.getVisibleResults().forEach((result) => {
       const div = this._document.createElement('div');
       const checkBox = this._document.createElement('input');
       checkBox.setAttribute('type', 'checkbox');

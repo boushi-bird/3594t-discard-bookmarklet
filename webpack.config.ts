@@ -27,7 +27,7 @@ const config: Configuration = {
     extensions: ['.js', '.ts', '.tsx'],
   },
   plugins: [
-    new DefinePlugin(convertObjectKeys(defines, k => `configDefines.${k}`)),
+    new DefinePlugin(convertObjectKeys(defines, (k) => `configDefines.${k}`)),
   ],
   module: {
     rules: [
