@@ -52,13 +52,13 @@ export default class CardSearcher {
     }
     const genMain = this.baseData.GEN_MAIN.filter(
       ({ key }) => key === card.gen_main
-    ).map(g => g)[0];
+    ).map((g) => g)[0];
 
     const genSubIndexes = [card.gen_sub0, card.gen_sub1, card.gen_sub2]
-      .filter(v => v !== '')
-      .map(v => parseInt(v));
+      .filter((v) => v !== '')
+      .map((v) => parseInt(v));
     // genSubIndexes.sort()
-    const genSubs = genSubIndexes.map(v => this.baseData.GEN_SUB[v]);
+    const genSubs = genSubIndexes.map((v) => this.baseData.GEN_SUB[v]);
     const hireLimitDate = card.hire_limit_date;
     const pocket = card.pocket === '1';
     return {
