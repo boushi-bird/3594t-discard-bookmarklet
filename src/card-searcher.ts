@@ -1,27 +1,11 @@
-import { BaseData, General, Card, State, GenMain, GenSub } from './data-types';
-
-export interface LabeledCard {
-  number: string;
-  genMain: GenMain;
-  genSubs: GenSub[];
-  hireLimitDate: string;
-  pocket: boolean;
-}
-
-export interface LabeledGeneral {
-  name: string;
-  rarity: string;
-  state: State;
-  version: string;
-  url: string;
-  major: string;
-  minor: string;
-}
-
-export interface CardInfo {
-  card: LabeledCard | null;
-  general: LabeledGeneral | null;
-}
+import type {
+  BaseData,
+  General,
+  Card,
+  CardInfo,
+  LabeledCard,
+  LabeledGeneral,
+} from 'local-type';
 
 export default class CardSearcher {
   constructor(public baseData: BaseData, public cardData: readonly Card[]) {}

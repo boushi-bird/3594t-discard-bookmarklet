@@ -1,8 +1,8 @@
 import iframeStyle from './templates/iframe-style.html';
 import iframeBody from './templates/iframe-body.html';
 import copyPlainText from './templates/copy-plain-text.html';
-import CardSearcher, { LabeledCard, LabeledGeneral } from './card-searcher';
-import { State, GenSub } from './data-types';
+import CardSearcher from './card-searcher';
+import type { State, GenSub, LabeledCard, LabeledGeneral } from 'local-type';
 
 const removeChildAll = (element: HTMLElement): void => {
   while (element.firstChild) {
