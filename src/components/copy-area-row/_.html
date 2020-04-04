@@ -1,20 +1,27 @@
 <tr>
-  <td rowspan="3">
+  <td rowspan="4">
+    <span style="font-size:8px">${CARD_TYPE}</span><br>
     ${CARD_IMAGE}
   </td>
-  <td><span style="font-size:22px">${CARD_NUMBER}</span></td>
-  <td>${CARD_TYPE}</td>
-</tr>
-<tr>
   <td>
-    <span style="font-size:22px">
+    <span style="font-size:18px">
       ${STATE}
       <a href="${LINK}" target="_blank">${VERSION} ${RARITY}${NAME}</a>
       ${GEN_MAIN} ${GEN_SUBS}
     </span>
   </td>
-  <td><span style="font-size:16px">登用期限: ${HIRE_LIMIT}</span></td>
 </tr>
 <tr>
-  <td colspan="3"><span style="font-size:8px">検索用: ${SEARCH_TEXTS}</span></td>
+  <td>
+    <span style="font-size:10px">No.</span>
+    <span style="font-size:18px">${CARD_NUMBER}</span>
+  </td>
+</tr>
+<tr>
+  <td>
+    <span style="font-size:12px">登用期限: ${HIRE_LIMIT}</span>
+  </td>
+</tr>
+<tr>
+  <td colspan="2"><span style="font-size:4px">検索用: ${SEARCH_TEXTS}</span></td>
 </tr>
