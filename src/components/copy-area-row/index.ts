@@ -30,9 +30,7 @@ export default function (props: Props): string {
   const thumb = props.thumbUrl
     ? `<img src="${props.thumbUrl}" width="48" height="48" />`
     : '';
-  const cardType = props.pocket
-    ? '<img src="https://3594t.net/img/datalist/icon_pocket.png" alt="ぽけっと">'
-    : '<img src="https://3594t.net/img/datalist/icon_arcade.png" alt="アーケード">';
+  const cardType = props.pocket ? 'ぽけっと' : 'アーケード';
   return replacer(html)
     .p('CARD_IMAGE', thumb)
     .p('CARD_NUMBER', props.num)
