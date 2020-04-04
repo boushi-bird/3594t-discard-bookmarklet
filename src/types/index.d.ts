@@ -1,4 +1,4 @@
-import {
+import type {
   BaseData,
   MemberData,
 } from '@boushi-bird/3594t-net-datalist/read-only';

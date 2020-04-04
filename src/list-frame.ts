@@ -1,8 +1,10 @@
+import type { LabeledCard, LabeledGeneral } from 'local-type';
 import iframeStyle from './templates/iframe-style.html';
 import iframeBody from './templates/iframe-body.html';
-import copyPlainText from './templates/copy-plain-text.html';
-import CardSearcher, { LabeledCard, LabeledGeneral } from './card-searcher';
-import { State, GenSub } from './data-types';
+import CardSearcher from './card-searcher';
+import ListRow from './components/list-row';
+import CopyArea from './components/copy-area';
+import { createColoredState, createColoredGenSub } from './utils';
 
 const removeChildAll = (element: HTMLElement): void => {
   while (element.firstChild) {
@@ -10,23 +12,10 @@ const removeChildAll = (element: HTMLElement): void => {
   }
 };
 
-type DateParts = {
-  yyyy: string;
-  MM: string;
-  dd: string;
-  hh: string;
-  mm: string;
-  ss: string;
-};
 type Result = {
   selected: boolean;
   card: LabeledCard;
   general: LabeledGeneral;
-};
-type ResultGroup = {
-  min: string | null;
-  max: string | null;
-  list: Result[];
 };
 
 // polyfill
@@ -184,52 +173,11 @@ export default class ListFrame {
       window.alert('1つ以上選択する必要があります');
       return;
     }
-    const hasPocket = selectedResults.some((g) => g.card.pocket);
     const tempElm = this._document.createElement('div');
     this._document.body.appendChild(tempElm);
-    const description = this._document.createElement('div');
-    let descriptionHtml = `武将名のリンクから登用ページへ行けます
-<br />`;
-    if (hasPocket) {
-      descriptionHtml += `(ぽ)・・・ぽけっと武将
-<br />`;
-    }
-    description.innerHTML = descriptionHtml;
-    tempElm.appendChild(description);
-    const hireLimitFormat: (parts: DateParts) => string = ({
-      yyyy,
-      MM,
-      dd,
-      hh,
-      mm,
-    }) => `${yyyy}/${MM}/${dd} ${hh}:${mm}`;
-    this.partitionHideLimitGroup(selectedResults).forEach(
-      ({ min, max, list }) => {
-        const hireLimit = this._document.createElement('div');
-        if (max !== min) {
-          hireLimit.innerHTML = `<br /><br />
-登用期限: ${this.dateFormat(min, hireLimitFormat)} - ${this.dateFormat(
-            max,
-            hireLimitFormat
-          )}`;
-        } else {
-          hireLimit.innerHTML = `<br /><br />
-登用期限: ${this.dateFormat(min, hireLimitFormat)}`;
-        }
-        tempElm.appendChild(hireLimit);
-        list.forEach((result) => {
-          const div = this._document.createElement('div');
-          div.innerHTML = this.createCopyCardInfoHtml(result);
-          tempElm.appendChild(div);
-        });
-      }
-    );
-    const createdBy = this._document.createElement('div');
-    createdBy.innerHTML = `<br /><br />
-この投稿は 三国志大戦 解任ブックマークレット(<a href="https://boushi-bird.github.io/3594t-discard-bookmarklet/">https://boushi-bird.github.io/3594t-discard-bookmarklet/</a>)
-により作成しています。`;
-    tempElm.appendChild(createdBy);
-    this._document.body.appendChild(tempElm);
+    tempElm.innerHTML = CopyArea({
+      cards: selectedResults,
+    });
 
     const selection = this._document.getSelection();
     selection && selection.selectAllChildren(tempElm);
@@ -243,48 +191,6 @@ export default class ListFrame {
         message && (message.innerHTML = '');
       }, 2000);
     }
-  }
-
-  private partitionHideLimitGroup(selectedResults: Result[]): ResultGroup[] {
-    let current: ResultGroup | null = null;
-    const results: ResultGroup[] = [];
-    const compare = (v1: string, v2: string): number => {
-      return parseInt(v1) - parseInt(v2);
-    };
-    const needNext = (hireLimitDate: string): boolean => {
-      if (current == null || current.min == null) {
-        return true;
-      }
-      // 日付が変わったら
-      if (compare(current.min, hireLimitDate) !== 0) {
-        return true;
-      }
-      return false;
-    };
-    const nextPartition = (hireLimitDate: string): void => {
-      if (!needNext(hireLimitDate)) {
-        return;
-      }
-      current = { min: null, max: null, list: [] };
-      results.push(current);
-    };
-    selectedResults.forEach((r) => {
-      const {
-        card: { hireLimitDate },
-      } = r;
-      nextPartition(hireLimitDate);
-      if (current == null) {
-        return;
-      }
-      if (current.min == null || compare(current.min, hireLimitDate) > 0) {
-        current.min = hireLimitDate;
-      }
-      if (current.max == null || compare(current.max, hireLimitDate) < 0) {
-        current.max = hireLimitDate;
-      }
-      current.list.push(r);
-    });
-    return results;
   }
 
   update(cardIndexes: (string | null)[], searcher: CardSearcher): void {
@@ -409,92 +315,25 @@ export default class ListFrame {
       });
       const span = this._document.createElement('span');
       span.style.verticalAlign = 'super';
-      span.innerHTML = this.createCardInfoHtml(result);
+      span.innerHTML = this.createListRow(result);
       div.appendChild(checkBox);
       div.appendChild(span);
       selectList.appendChild(div);
     });
   }
 
-  private createCardInfoHtml(result: Result): string {
-    const displayHireLimitDate =
-      ' | 期限:' +
-      this.dateFormat(
-        result.card.hireLimitDate,
-        ({ MM, dd, hh, mm }) => `${MM}/${dd} ${hh}:${mm}`
-      );
-    return `${this.createCopyCardInfoHtml(result)}${displayHireLimitDate}`;
-  }
-
-  private createCopyCardInfoHtml({ card, general }: Result): string {
-    const genSubsText = card.genSubs.map(this.createColoredGenSub).join('');
-    const p = this.p;
-    return copyPlainText
-      .replace(p('CARD_NUMBER'), card.number)
-      .replace(p('POCKET'), card.pocket ? '(ぽ)' : '')
-      .replace(p('STATE'), this.createColoredState(general.state))
-      .replace(p('LINK'), general.url)
-      .replace(p('VERSION'), general.version)
-      .replace(p('RARITY'), general.rarity)
-      .replace(p('NAME'), general.name)
-      .replace(p('GEN_MAIN'), card.genMain.name_short)
-      .replace(p('GEN_SUBS'), `${genSubsText}`);
-  }
-
-  private createColoredState(state: State): string {
-    const { red, green, blue } = state;
-    const padStartHex = (s: string): string => {
-      return ('00' + (parseInt(s) || 0).toString(16)).substr(-2);
-    };
-    const color =
-      '#' + padStartHex(red) + padStartHex(green) + padStartHex(blue);
-    return `<font color="${color}">${state.name_short}</font>`;
-  }
-
-  private createColoredGenSub(genSub: GenSub): string {
-    const nameShort = genSub.name_short;
-    let s;
-    if (nameShort === '復活') {
-      s = '活';
-    } else {
-      s = nameShort[0];
-    }
-    let color = 'black';
-    switch (s) {
-      case '兵':
-        color = 'green';
-        break;
-      case '速':
-        color = 'blue';
-        break;
-      case '攻':
-        color = 'red';
-        break;
-      case '活':
-        color = '#ffd12a';
-        break;
-    }
-    return `<font color="${color}">${s}</font>`;
-  }
-
-  private p(key: string): RegExp {
-    return new RegExp(`\\$\\{${key}\\}`, 'g');
-  }
-
-  private dateFormat(
-    stringDate: string | null,
-    formatFunc: (parts: DateParts) => string
-  ): string {
-    if (!stringDate || stringDate.length !== 14) {
-      return '';
-    }
-    return formatFunc({
-      yyyy: stringDate.substr(0, 4),
-      MM: stringDate.substr(4, 2),
-      dd: stringDate.substr(6, 2),
-      hh: stringDate.substr(8, 2),
-      mm: stringDate.substr(10, 2),
-      ss: stringDate.substr(12, 2),
+  private createListRow({ card, general }: Result): string {
+    return ListRow({
+      num: card.number,
+      pocket: card.pocket,
+      state: createColoredState(general.state),
+      link: general.url,
+      version: general.version,
+      rarity: general.rarity,
+      name: general.name,
+      genMain: card.genMain.name_short,
+      genSubs: card.genSubs.map(createColoredGenSub),
+      hireLimit: card.hireLimitDate,
     });
   }
 }

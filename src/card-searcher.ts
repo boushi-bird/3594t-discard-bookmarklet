@@ -1,27 +1,11 @@
-import { BaseData, General, Card, State, GenMain, GenSub } from './data-types';
-
-export interface LabeledCard {
-  number: string;
-  genMain: GenMain;
-  genSubs: GenSub[];
-  hireLimitDate: string;
-  pocket: boolean;
-}
-
-export interface LabeledGeneral {
-  name: string;
-  rarity: string;
-  state: State;
-  version: string;
-  url: string;
-  major: string;
-  minor: string;
-}
-
-export interface CardInfo {
-  card: LabeledCard | null;
-  general: LabeledGeneral | null;
-}
+import type {
+  BaseData,
+  General,
+  Card,
+  CardInfo,
+  LabeledCard,
+  LabeledGeneral,
+} from 'local-type';
 
 export default class CardSearcher {
   constructor(public baseData: BaseData, public cardData: readonly Card[]) {}
@@ -41,12 +25,12 @@ export default class CardSearcher {
     }
 
     return {
-      card: this._createLabeledCard(card),
-      general: this._createLabeledGeneral(general),
+      card: this.createLabeledCard(card),
+      general: this.createLabeledGeneral(general),
     };
   }
 
-  _createLabeledCard(card: Card | null): LabeledCard | null {
+  private createLabeledCard(card: Card | null): LabeledCard | null {
     if (!card) {
       return null;
     }
@@ -60,17 +44,19 @@ export default class CardSearcher {
     // genSubIndexes.sort()
     const genSubs = genSubIndexes.map((v) => this.baseData.GEN_SUB[v]);
     const hireLimitDate = card.hire_limit_date;
+    const fireDate = card.fire_date;
     const pocket = card.pocket === '1';
     return {
       number: card.number,
       genMain,
       genSubs,
+      fireDate,
       hireLimitDate,
       pocket,
     };
   }
 
-  _createLabeledGeneral(general: General | null): LabeledGeneral | null {
+  private createLabeledGeneral(general: General | null): LabeledGeneral | null {
     if (!general) {
       return null;
     }
@@ -81,6 +67,12 @@ export default class CardSearcher {
     const minor = verType.name === 'Ex' ? 'EX' : general.add_version;
     const version = minor === '0' ? `第${major}弾` : `第${major}弾-${minor}`;
     const url = `https://3594t.net/datalist/?v=GENERAL&amp;s=POPUP_GENERAL&amp;c=${general.code}`;
+    const thumbArcadeUrl = general.avatar
+      ? `https://3594t.net/img/avatar/${general.avatar}.png`
+      : undefined;
+    const thumbPocketUrl = general.pocket_avatar
+      ? `https://3594t.net/img/avatar/${general.pocket_avatar}.png`
+      : undefined;
 
     return {
       name: personal.name,
@@ -90,6 +82,8 @@ export default class CardSearcher {
       url,
       major,
       minor,
+      thumbArcadeUrl,
+      thumbPocketUrl,
     };
   }
 }
