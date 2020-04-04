@@ -15,6 +15,7 @@ declare module 'local-type' {
     number: string;
     genMain: GenMain;
     genSubs: GenSub[];
+    fireDate: string;
     hireLimitDate: string;
     pocket: boolean;
   }
@@ -27,10 +28,21 @@ declare module 'local-type' {
     url: string;
     major: string;
     minor: string;
+    thumbArcadeUrl?: string;
+    thumbPocketUrl?: string;
   }
 
   export interface CardInfo {
     card: LabeledCard | null;
     general: LabeledGeneral | null;
+  }
+
+  export interface DateParts {
+    yyyy: string;
+    MM: string;
+    dd: string;
+    hh: string;
+    mm: string;
+    ss: string;
   }
 }
