@@ -18,14 +18,6 @@ type Result = {
   general: LabeledGeneral;
 };
 
-// polyfill
-Number.isNaN =
-  Number.isNaN ||
-  function (value): boolean {
-    // eslint-disable-next-line no-self-compare
-    return typeof value === 'number' && value !== value;
-  };
-
 export default class ListFrame {
   private iframe: HTMLIFrameElement;
   private results: Result[];
