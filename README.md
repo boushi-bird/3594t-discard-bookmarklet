@@ -16,7 +16,7 @@ npm install
 
 ### 開発
 
-[開発用ブックマークレット](docs/bookmarklet/local.js)を登録する
+[開発用ブックマークレット](https://boushi-bird.github.io/3594t-discard-bookmarklet/bookmarklet/local.js)を登録する
 
 下記を実行
 
