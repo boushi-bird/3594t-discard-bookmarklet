@@ -6,9 +6,11 @@ import type {
 declare global {
   let configDefines: { [key: string]: string };
 
+  /* eslint-disable camelcase */
   interface Window {
     base_data: BaseData;
     member_data: MemberData;
     member_card_fire_date: { date: string; index: string }[];
   }
+  /* eslint-enable camelcase */
 }
