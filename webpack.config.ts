@@ -4,7 +4,7 @@ import defines from './config/defines';
 
 const isProduction: boolean = process.env.NODE_ENV === 'production';
 
-const convertObjectKeys = <O extends { [key: string]: any }>( // eslint-disable-line @typescript-eslint/no-explicit-any
+const convertObjectKeys = <V, O extends { [key: string]: V }>(
   o: O,
   func: (key: string) => string
 ): O =>

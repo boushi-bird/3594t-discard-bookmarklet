@@ -20,7 +20,8 @@ fse.copySync(copySrcDir, distDir);
 const srcConfigPath = path.resolve(copySrcDir, '_config.yml');
 const distConfigPath = path.resolve(distDir, '_config.yml');
 
-const conf = jsYaml.safeLoad(fs.readFileSync(srcConfigPath, charset));
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const conf = jsYaml.safeLoad(fs.readFileSync(srcConfigPath, charset)) as any;
 
 if (process.env.GH_PAGES_URL) {
   conf.url = process.env.GH_PAGES_URL;
